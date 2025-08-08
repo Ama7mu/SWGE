@@ -1,1 +1,41 @@
-Tets
+name: Windows - LiteManager
+
+on:
+  workflow_dispatch:
+    inputs:
+      config_file:
+        description: 'Upload your config.json file'
+        required: true
+        type: file
+
+jobs:
+  build:
+    name: Start Building...
+    runs-on: windows-latest
+    timeout-minutes: 9999
+    
+    steps:
+      - name: Upload config.json
+        uses: actions/upload-artifact@v4
+        with:
+          name: config.json
+          path: ${{ github.event.inputs.config_file }}
+
+      - name: Downloading & Installing Essentials
+        run: |
+          Invoke-WebRequest -Uri "https://raw.githubusercontent.com/MoGLCL/CL/refs/heads/main/SWGE/Download.bat" -OutFile "Download.bat"
+          cmd /c Download.bat
+
+      - name: Move config.json to Desktop/SWGE
+        run: |
+          mkdir "$env:USERPROFILE\Desktop\SWGE" -Force
+          move "config.json" "$env:USERPROFILE\Desktop\SWGE\config.json"
+
+      - name: Run Start.bat
+        run: cmd /c Start.bat
+
+      - name: Connect to LiteManager
+        run: cmd /c show.bat
+
+      - name: Time Counter
+        run: cmd /c loop.bat
