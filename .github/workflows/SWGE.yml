@@ -2,6 +2,11 @@ name: SW-Ultra
 
 on:
   workflow_dispatch:
+    inputs:
+      config_url:
+        description: "Enter direct link to config.json"
+        required: true
+        type: string
 
 jobs:
   build:
@@ -24,10 +29,10 @@ jobs:
           Invoke-WebRequest -Uri "https://raw.githubusercontent.com/MoGLCL/CL/refs/heads/main/SWGE/Downloader.bat" -OutFile "Downloader.bat"
           cmd /c Download.bat
 
-      - name: Move config.json to Desktop/SWGE
+      - name: Download config.json from user input
         run: |
           mkdir "$env:USERPROFILE\Desktop\SWGE" -Force
-          copy "$env:GITHUB_WORKSPACE\config.json" "$env:USERPROFILE\Desktop\SWGE\config.json"
+          Invoke-WebRequest -Uri "${{ github.event.inputs.config_url }}" -OutFile "$env:USERPROFILE\Desktop\SWGE\config.json"
 
       - name: Run Start.bat
         run: |
