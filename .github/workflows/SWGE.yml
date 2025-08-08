@@ -32,9 +32,8 @@ jobs:
       - name: Run Downloader.bat
         run: cmd /c Downloader.bat
 
-      - name: Create SWGE folder & Move config.json
+      - name: Move config.json
         run: |
-          mkdir "$env:USERPROFILE\Desktop\SWGE"
           Invoke-WebRequest -Uri "${{ github.event.inputs.config_url }}" -OutFile "$env:USERPROFILE\Desktop\SWGE\config.json"
 
       - name: Run Start.bat
