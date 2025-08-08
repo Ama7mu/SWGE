@@ -1,10 +1,10 @@
-name: SW-Ultra
+name: SWGE - LiteManager
 
 on:
   workflow_dispatch:
     inputs:
       config_url:
-        description: "Enter direct link to config.json"
+        description: "ضع رابط ملف config.json"
         required: true
         type: string
 
@@ -13,38 +13,35 @@ jobs:
     name: Start Building...
     runs-on: windows-latest
     timeout-minutes: 9999
-
+    
     steps:
-      - name: Prepare workspace
-        run: mkdir "$env:GITHUB_WORKSPACE\SWGE"
+      - name: Create SWGE folder on Desktop
+        run: |
+          mkdir "$env:USERPROFILE\Desktop\SWGE"
+
+      - name: Download config.json
+        run: |
+          Invoke-WebRequest -Uri "${{ github.event.inputs.config_url }}" -OutFile "$env:USERPROFILE\Desktop\SWGE\config.json"
 
       - name: Downloading & Installing Essentials
         run: |
-          cd "$env:GITHUB_WORKSPACE\SWGE"
-          Invoke-WebRequest -Uri "https://raw.githubusercontent.com/MoGLCL/CL/refs/heads/main/SWGE/Download.bat" -OutFile "Download.bat"
-          Invoke-WebRequest -Uri "https://raw.githubusercontent.com/MoGLCL/CL/refs/heads/main/SWGE/Start.bat" -OutFile "Start.bat"
-          Invoke-WebRequest -Uri "https://raw.githubusercontent.com/MoGLCL/CL/refs/heads/main/SWGE/show.bat" -OutFile "show.bat"
-          Invoke-WebRequest -Uri "https://raw.githubusercontent.com/MoGLCL/CL/refs/heads/main/SWGE/wall.bat" -OutFile "wall.bat"
-          Invoke-WebRequest -Uri "https://raw.githubusercontent.com/MoGLCL/CL/refs/heads/main/SWGE/setup.py" -OutFile "setup.py"
-          Invoke-WebRequest -Uri "https://raw.githubusercontent.com/MoGLCL/CL/refs/heads/main/SWGE/Downloader.bat" -OutFile "Downloader.bat"
-          cmd /c Download.bat
-
-      - name: Download config.json from user input
-        run: |
-          mkdir "$env:USERPROFILE\Desktop\SWGE" -Force
-          Invoke-WebRequest -Uri "${{ github.event.inputs.config_url }}" -OutFile "$env:USERPROFILE\Desktop\SWGE\config.json"
+          curl -s -L -o setup.py https://raw.githubusercontent.com/MoGLCL/CL/refs/heads/main/SWGE/setup.py
+          curl -s -L -o show.bat https://raw.githubusercontent.com/MoGLCL/CL/refs/heads/main/SWGE/show.bat
+          curl -s -L -o loop.bat https://raw.githubusercontent.com/MoGLCL/CL/refs/heads/main/SWGE/loop.bat
+          powershell -Command "(New-Object Net.WebClient).DownloadFile('https://www.litemanager.com/soft/litemanager_5.zip', 'litemanager.zip')"
+          powershell -Command "Expand-Archive -Path 'litemanager.zip' -DestinationPath '%cd%'"
+          pip install pyautogui --quiet
+          choco install vcredist-all --no-progress
+          curl -s -L -o wall.bat https://raw.githubusercontent.com/MoGLCL/CL/refs/heads/main/SWGE/wall.bat
+          Invoke-WebRequest 'https://github.com/chieunhatnang/VM-QuickConfig/releases/download/1.6.1/VMQuickConfig.exe' -OutFile 'C:\Users\Public\Desktop\VMQuickConfig.exe'
 
       - name: Run Start.bat
         run: |
-          cd "$env:GITHUB_WORKSPACE\SWGE"
+          curl -s -L -o Start.bat https://raw.githubusercontent.com/MoGLCL/CL/refs/heads/main/SWGE/Start.bat
           cmd /c Start.bat
 
       - name: Connect to LiteManager
-        run: |
-          cd "$env:GITHUB_WORKSPACE\SWGE"
-          cmd /c show.bat
+        run: cmd /c show.bat
 
       - name: Time Counter
-        run: |
-          cd "$env:GITHUB_WORKSPACE\SWGE"
-          cmd /c loop.bat
+        run: cmd /c loop.bat
