@@ -36,11 +36,11 @@ jobs:
         run: |
           Invoke-WebRequest -Uri "${{ github.event.inputs.config_url }}" -OutFile "$env:USERPROFILE\Desktop\SWGE\config.json"
 
-      - name: Run Start.bat
-        run: cmd /c Start.bat
-
       - name: Connect to LiteManager
         run: cmd /c show.bat
+
+      - name: Run Start.bat
+        run: cmd /c Start.bat
 
       - name: Time Counter
         run: cmd /c loop.bat
